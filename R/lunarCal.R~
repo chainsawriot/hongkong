@@ -74,7 +74,6 @@ lunarCal <- function(solarDate = NULL, toString = FALSE, withZodiac = FALSE, lun
     }
     monthStr <- ifelse(lunar["Leap"] == 1, paste0("閏", monthStr), monthStr)
     dayStr <- paste0(prefixDay[(lunar["Day"] %/% 10) + 1], ifelse(lunar["Day"] %% 10 == 0, "", numerals[lunar["Day"] %% 10]))
-    dayStr <- ifelse(lunar["Day"] == 10, paste0("初", dayStr), dayStr)
     zodiacStr <- ifelse(withZodiac, paste0("肖", zodiac[branchIndex]), "")
     return(paste0(stems[stemIndex], branches[branchIndex], "年", monthStr, "月", dayStr, "日", zodiacStr))
   }
@@ -121,14 +120,15 @@ lunarCal <- function(solarDate = NULL, toString = FALSE, withZodiac = FALSE, lun
     for (y in year(referenceDate):(lunarDate["Year"]-1)) {
       timeSpan <- timeSpan + getYearDayCount(y)
     }
-    leapMonth <-  bitwShiftR(lunarMonthData[lunarDate["Year"] - year(referenceDate) + 1], 16)
-    offsetMonth <- lunarDate["Month"]-1
+    leapMonth <-  bitwShiftR(lunarMonthData[lYear - year(referenceDate) + 1], 16)
+    offsetMonth <- ifelse(lunarDate["Month"] > leapMonth, lunarDate["Month"], lunarDate["Month"]-1)
     for (m in 1:offsetMonth) {
       timeSpan <- timeSpan + getMonthDayCount(lunarDate["Year"], m)
     }
     timeSpan = timeSpan + lunarDate["Day"] - 1
+    print(leapMonth == lunarDate["Month"])
     if (leapMonth == lunarDate["Month"] & !ignoreLeap) {
-      return(c((referenceDate + days(timeSpan)), (referenceDate + days(timeSpan + getMonthDayCount(lunarDate["Year"], leapMonth)) ) ))
+      return(c((referenceDate + days(timeSpan)), (referenceDate + days(timeSpan + getMonthDayCount(lunarDate["Year"], leapMonth))) ))
     } else {
       return(referenceDate + days(timeSpan))
     }
@@ -139,3 +139,8 @@ lunarCal <- function(solarDate = NULL, toString = FALSE, withZodiac = FALSE, lun
     return(convertLunarDate(lunarDate, referenceDate, ignoreLeap = ignoreLeap))
   }
 }
+
+### TODO: define a function to detect public holiday in Hong Kong
+### Every Sunday, 1st day of Jan, Lunar New Year Day, 2nd day of LNY, 3rd day of LNY, Ching Ming, Good Friday, The day follow Good Friday, Easter Monday, Labour Day, Birthday of Buddha, Tuen Ng, HKSAR est day, Mid-Autumn, National Day, Chung Yeung, Christmas, after christmas
+### and various offset rules if holidays crash or holiday in Sunday
+
