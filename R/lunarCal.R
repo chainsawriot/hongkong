@@ -79,6 +79,9 @@ lunarCal <- function(solarDate = NULL, toString = FALSE, withZodiac = FALSE, lun
     return(paste0(stems[stemIndex], branches[branchIndex], "年", monthStr, "月", dayStr, "日", zodiacStr))
   }
 
+  ## define a function to check for valid SolarDate
+  #isValidSolarDate <- function()
+  
   convertSolarDate <- function(solarDate, toString, withZodiac, referenceDate, maxDate) {
     ### assert solarDate >= referenceDate and <= maxDate
     if (solarDate < referenceDate | solarDate > maxDate) {
@@ -121,12 +124,16 @@ lunarCal <- function(solarDate = NULL, toString = FALSE, withZodiac = FALSE, lun
     for (y in year(referenceDate):(lunarDate["Year"]-1)) {
       timeSpan <- timeSpan + getYearDayCount(y)
     }
+    #print(timeSpan)
     leapMonth <-  bitwShiftR(lunarMonthData[lunarDate["Year"] - year(referenceDate) + 1], 16)
     offsetMonth <- lunarDate["Month"]-1
-    for (m in 1:offsetMonth) {
-      timeSpan <- timeSpan + getMonthDayCount(lunarDate["Year"], m)
+    if (lunarDate["Month"] > 1) {
+      for (m in 1:offsetMonth) {
+        timeSpan <- timeSpan + getMonthDayCount(lunarDate["Year"], m)
+      }
     }
     timeSpan = timeSpan + lunarDate["Day"] - 1
+    #print(timeSpan)
     if (leapMonth == lunarDate["Month"] & !ignoreLeap) {
       return(c((referenceDate + days(timeSpan)), (referenceDate + days(timeSpan + getMonthDayCount(lunarDate["Year"], leapMonth)) ) ))
     } else {
