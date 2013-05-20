@@ -127,6 +127,9 @@ lunarCal <- function(solarDate = NULL, toString = FALSE, withZodiac = FALSE, lun
     #print(timeSpan)
     leapMonth <-  bitwShiftR(lunarMonthData[lunarDate["Year"] - year(referenceDate) + 1], 16)
     offsetMonth <- lunarDate["Month"]-1
+    if (lunarDate["Month"] > leapMonth) { ## adjusted for the leap month
+      offsetMonth <- offsetMonth + 1
+    }
     if (lunarDate["Month"] > 1) {
       for (m in 1:offsetMonth) {
         timeSpan <- timeSpan + getMonthDayCount(lunarDate["Year"], m)
