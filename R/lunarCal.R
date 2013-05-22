@@ -79,8 +79,40 @@ lunarCal <- function(solarDate = NULL, toString = FALSE, withZodiac = FALSE, lun
     return(paste0(stems[stemIndex], branches[branchIndex], "年", monthStr, "月", dayStr, "日", zodiacStr))
   }
 
-  ## define a function to check for valid SolarDate
-  #isValidSolarDate <- function()
+  getLeapMonth <- function(lunarDate, referenceDate) {
+    bitwShiftR(lunarMonthData[lunarDate["Year"] - year(referenceDate) + 1], 16)
+  }
+  ## define a function to check for validity of LunarDate
+
+  
+  isValidLunarDate <- function(lunarDate, referenceDate) {
+      ### check for correct format
+      if (sum(!c("Year", "Day", "Month") %in% names(lunarDate)) != 0) { ### Leap is optional
+          return(FALSE)
+      }
+      if (lunarDate["Month"] < 1 | lunarDate["Month"] > 12 | lunarDate["Day"] < 1 | lunarDate["Day"] > 30) {
+          return(FALSE)
+      }
+      ### check for the validity of lunarDate["Day"]
+          #print(timeSpan)
+      leapMonth <- getLeapMonth(lunarDate["Year"],referenceDate)
+      if ("Leap" %in% names(lunarDate) & lunarDate["Leap"] == 1 & lunarDate["Month"] != leapMonth) {
+          return(FALSE)
+      }
+      if ("Leap" %in% names(lunarDate) & lunarDate["Leap"] == 1 & lunarDate["Month"] == leapMonth) {
+          testMonth <- lunarDate["Month"] + 1
+      } else if (leapMonth <=12 & lunarDate["Month"] > leapMonth) {
+          testMonth <- lunarDate["Month"] + 1
+      } else {
+          testMonth <- lunarDate["Month"]
+      }
+      #print(testMonth)
+      #print(getMonthDayCount(lunarDate["Year"], testMonth))
+      if (lunarDate["Day"] > getMonthDayCount(lunarDate["Year"], testMonth)) {
+          return(FALSE)
+      }
+      return(TRUE)         
+  }
   
   convertSolarDate <- function(solarDate, toString, withZodiac, referenceDate, maxDate) {
     ### assert solarDate >= referenceDate and <= maxDate
@@ -117,9 +149,15 @@ lunarCal <- function(solarDate = NULL, toString = FALSE, withZodiac = FALSE, lun
     }
   }
   
-  convertLunarDate <- function(lunarDate, referenceDate, ignoreLeap = TRUE) {
+  convertLunarDate <- function(lunarDate, referenceDate, ignoreLeap = TRUE, maxDate) {
     ### lunarDate should be created with c(Year = Year, Month = Month, Day = Day)
     ### assert everything is complete
+    if (lunarDate["Year"] < year(referenceDate) | lunarDate["Year"] > year(maxDate)) {
+      stop(paste0("lunarDate out of the supported range:", referenceDate, " to ", maxDate))
+    }
+    if (!isValidLunarDate(lunarDate, referenceDate)) {
+        stop("invalid lunarDate")
+    }
     timeSpan <- 0
     for (y in year(referenceDate):(lunarDate["Year"]-1)) {
       timeSpan <- timeSpan + getYearDayCount(y)
@@ -146,6 +184,6 @@ lunarCal <- function(solarDate = NULL, toString = FALSE, withZodiac = FALSE, lun
   if (!is.null(solarDate)) {
     return(convertSolarDate(solarDate, toString, withZodiac, referenceDate, maxDate))
   } else {
-    return(convertLunarDate(lunarDate, referenceDate, ignoreLeap = ignoreLeap))
+    return(convertLunarDate(lunarDate, referenceDate, ignoreLeap = ignoreLeap, maxDate))
   }
 }
