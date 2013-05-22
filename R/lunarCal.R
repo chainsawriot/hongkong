@@ -1,11 +1,20 @@
-### Maintainer: Chung-hong Chan ("chainsawriot" or "Fuk Chan")
-### Affliation: Journalism and Media Studies Centre, University of Hong Kong, Hong Kong
-### Email: chainsawtiney@gmail.com
-### for the R package "hongkong"
+#' Convert Solar date to and from lunar date
+#'
+#' This function allows the conversion between solar date and lunar date.
+#'
+#' @param x date to convert, can be solar date or lunar date. If the class of x #' is a date, x is converted to lunar date. If the class of x is a vector with
+#' the format of lunar date, x is converted to solar date.
+#' @param toString format the output lunar date to Chinese string
+#' @param withZodiac Append the Chinese Zodiac sign to the string output of
+#' lunar date
+#' @param ignoreLeap ignore leap month when the converted lunar date can be
+#' a leap month
+#' @return Date (solar date) or lunar date
+#' @export
 
-library(lubridate)
 
-lunarCal <- function(solarDate = NULL, toString = FALSE, withZodiac = FALSE, lunarDate=NULL, ignoreLeap=TRUE) {
+
+lunarCal <- function(x, toString = FALSE, withZodiac = FALSE, ignoreLeap=TRUE) {
   ### PURPOSE: convert the solar date to lunar date, in the form of (year, mon, day, leap)
 
   ### Data extracted from liblunar
@@ -152,11 +161,11 @@ lunarCal <- function(solarDate = NULL, toString = FALSE, withZodiac = FALSE, lun
   convertLunarDate <- function(lunarDate, referenceDate, ignoreLeap = TRUE, maxDate) {
     ### lunarDate should be created with c(Year = Year, Month = Month, Day = Day)
     ### assert everything is complete
-    if (lunarDate["Year"] < year(referenceDate) | lunarDate["Year"] > year(maxDate)) {
-      stop(paste0("lunarDate out of the supported range:", referenceDate, " to ", maxDate))
-    }
     if (!isValidLunarDate(lunarDate, referenceDate)) {
         stop("invalid lunarDate")
+    }
+    if (lunarDate["Year"] < year(referenceDate) | lunarDate["Year"] > year(maxDate)) {
+      stop(paste0("lunarDate out of the supported range:", referenceDate, " to ", maxDate))
     }
     timeSpan <- 0
     for (y in year(referenceDate):(lunarDate["Year"]-1)) {
@@ -181,9 +190,13 @@ lunarCal <- function(solarDate = NULL, toString = FALSE, withZodiac = FALSE, lun
       return(referenceDate + days(timeSpan))
     }
   }
-  if (!is.null(solarDate)) {
+  if (class(x) == "Date") {
+    solarDate <- x
     return(convertSolarDate(solarDate, toString, withZodiac, referenceDate, maxDate))
-  } else {
+  } else if (is.vector(x) & length(x) > 1) {
+    lunarDate <- x
     return(convertLunarDate(lunarDate, referenceDate, ignoreLeap = ignoreLeap, maxDate))
+  } else {
+    stop("Invalid input: x must be date or lunarDate")
   }
 }

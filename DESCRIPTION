@@ -2,10 +2,17 @@ Package: hongkong
 Title: An R Package for Analysing Hong Kong Data
 Version: 0.1
 Author: Chung-hong Chan <chainsawtiney@gmail.com>
+Maintainer: Chung-hong Chan <chainsawtiney@gmail.com>
 Description: Various functions useful for analysing Hong Kong data
 Depends:
     R (>= 3.0.0)
-Imports: lubridate
+Imports:
+    lubridate,
+    stringr
 License: GPL-2
-Suggests: 
-
+Suggests:
+Collate:
+    'aslunar.R'
+    'hkHoliday.R'
+    'hongkong-package.r'
+    'lunarCal.R'

@@ -3,7 +3,7 @@ hkHoliday <- function(yearInt, push=TRUE) {
   # According to the General Holidays Ordinance
   composeHoliday <- function(day, mon, year, push=TRUE, lunar=FALSE, minus=FALSE) {
     if (lunar) {
-      holidayDate <- lunarCal(lunarDate=c(Year=year, Month=mon, Day=day))
+      holidayDate <- lunarCal(c(Year=year, Month=mon, Day=day))
     } else {
       holidayDate <- as.Date(paste0(year, "-", mon, "-", day))
     }
@@ -49,10 +49,10 @@ hkHoliday <- function(yearInt, push=TRUE) {
   ## lunar New Year
   lnyDays <- c()
   for (i in 1:3) {
-    toAdd <- lunarCal(lunarDate=c(Year=yearInt, Month=1, Day=i))
+    toAdd <- lunarCal(c(Year=yearInt, Month=1, Day=i))
     if (wday(toAdd) == 1 & push) {
       if (yearInt >= 2011) { ### rule changed after 2011
-        toAdd <- lunarCal(lunarDate=c(Year=yearInt, Month=1, Day=4))
+        toAdd <- lunarCal(c(Year=yearInt, Month=1, Day=4))
       } else if (i == 1 & push) {
         toAdd <- toAdd - days(1)
       } else if (push) {
