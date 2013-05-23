@@ -12,7 +12,6 @@ Imports:
 License: GPL-2
 Suggests:
 Collate:
-    'aslunar.R'
     'hkHoliday.R'
     'hongkong-package.r'
     'lunarCal.R'
