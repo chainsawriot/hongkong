@@ -2,25 +2,23 @@
 #'
 #' This function allows the conversion between solar date and lunar date.
 #'
-#' @param x date to convert, can be solar date or lunar date. If x is a Date object, convert to lunar date. If the class of x is a vector with
-#' the format of lunar date, convert to solar date.
+#' @param x date to convert, can be solar date or lunar date. Date object is converted to lunar date. Vector with
+#' the format of lunar date is converted to solar date.
 #' @param toString format the output lunar date to Chinese string (Traditional Chinese)
 #' @param withZodiac Append the Chinese Zodiac sign to the string output of
 #' lunar date
-#' @param ignoreLeap ignore leap month when the converted lunar date can be
+#' @param ignoreLeap ignore leap month when the converted lunar date can have
 #' a leap month
-#' @return Date object (solar date) or lunar date
+#' @return Date object (solar date) or lunar date, depends on the input x.
 #' @export
 
 lunarCal <- function(x, toString = FALSE, withZodiac = FALSE, ignoreLeap=TRUE) {
-### PURPOSE: convert the solar date to lunar date, in the form of (year, mon, day, leap)
     params <- lookupData(lookup="params")
     referenceDate <- params$referenceDate
     maxDate <- params$maxDate
     lYear <- params$lYear
     lMonth <- params$lMonth
     lDay <- params$lDay
-  
   convertSolarDate <- function(solarDate, toString, withZodiac, referenceDate, maxDate, lYear, lMonth, lDay) {
     ### assert solarDate >= referenceDate and <= maxDate
     if (solarDate < referenceDate | solarDate > maxDate) {
@@ -79,8 +77,17 @@ lunarCal <- function(x, toString = FALSE, withZodiac = FALSE, ignoreLeap=TRUE) {
     }
     timeSpan = timeSpan + lunarDate["Day"] - 1
     #print(timeSpan)
-    if (leapMonth == lunarDate["Month"] & !ignoreLeap) {
-      return(c((referenceDate + days(timeSpan)), (referenceDate + days(timeSpan + lookupData(lunarDate["Year"], leapMonth, lookup="month")) ) ))
+    if (leapMonth == lunarDate["Month"]) {
+      res <- c((referenceDate + days(timeSpan)), (referenceDate + days(timeSpan + lookupData(lunarDate["Year"], leapMonth, lookup="month"))))
+      #print(res)
+      if ("Leap" %in% names(lunarDate) & lunarDate["Leap"] == 1) {
+          return(res[2])
+      } else if (!ignoreLeap) {
+          return(res)
+      } else {
+          return(res[1])
+      }
+      
     } else {
       return(referenceDate + days(timeSpan))
     }
@@ -93,12 +100,16 @@ lunarCal <- function(x, toString = FALSE, withZodiac = FALSE, ignoreLeap=TRUE) {
     lunarDate <- x
     return(convertLunarDate(lunarDate=lunarDate, referenceDate=referenceDate, ignoreLeap = ignoreLeap, maxDate=maxDate))
   } else {
-    stop("Invalid input: x must be Date object or lunarDate")
+    stop("Invalid input: x must be Date object or Lunar date")
   }
 }
 
-### A helper function to extract data from liblunar dataset and provide various magic numbers for lunarCal and is.validLunarDate
+### A helper function to extract data from liblunar dataset and provide various magic numbers for lunarCal and is.lunar
+### lookup = "year" -> get the number of day of a given lunar year
+### lookup = "month" -> get the number of day of a given lunar month
+### lookup = "leap" -> get the leap month of a given lunar year, return 13 if there is no leap month
 lookupData <- function(lunarYearInt, lunarMonthInt, lookup) {
+	### magic numbers
     lunarMonthData <- c(
     0xF0EA4, 0xF1D4A, 0x52C94, 0xF0C96, 0xF1536, 0x42AAC, 0xF0AD4, 0xF16B2, 0x22EA4, 0xF0EA4,  # 1901-1910
     0x6364A, 0xF164A, 0xF1496, 0x52956, 0xF055A, 0xF0AD6, 0x216D2, 0xF1B52, 0x73B24, 0xF1D24,  # 1911-1920
@@ -121,7 +132,6 @@ lookupData <- function(lunarYearInt, lunarMonthInt, lookup) {
     0xF192C, 0x7329C, 0xF0AAC, 0xF156A, 0x52B64, 0xF0DA4, 0xF1D4A, 0x41C94, 0xF0C96, 0x8192E,  # 2081-2090
     0xF0956, 0xF0AB6, 0x615AC, 0xF16D4, 0xF0EA4, 0x42E4A, 0xF164A, 0xF1516, 0x22936           # 2090-2099
     )
-    ### magic numbers
     referenceDate <- as.Date("1901-2-19")
     maxDate <- as.Date("2100-2-18")
     lYear <- 1901 ## Initial L Year, Month and Day are 1901, 1, 1. The day one of the Lunar Calendar in this program
@@ -160,12 +170,12 @@ lookupData <- function(lunarYearInt, lunarMonthInt, lookup) {
 }
 #' Format lunar date into Chinese string
 #'
-#' This function converts lunar date to Chinese string.
+#' convert lunar date to Traditional Chinese representation.
 #'
 #' @param lunarDate date to convert
 #' @param withZodiac Append the Chinese Zodiac sign to the string output of
-#' lunar date
-#' @return A Traditional Chinese string representation of the lunar date
+#' lunar date. Using Cantonese version of Chinese Zodiac signs.
+#' @return Traditional Chinese string representation of the lunar date
 #' @export
 
 formatLunar <- function(lunarDate, withZodiac=FALSE) {
@@ -238,7 +248,7 @@ is.lunar <- function(lunarDate) {
 
 #' Lunar date conversion function from character
 #'
-#' A quick way to construct lunar date, akin the as.Date()
+#' A handy way to construct lunar date, akin the as.Date().
 #'
 #' @param x String
 #' @return Lunar Date
