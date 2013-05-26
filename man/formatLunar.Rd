@@ -8,13 +8,14 @@
   \item{lunarDate}{date to convert}
 
   \item{withZodiac}{Append the Chinese Zodiac sign to the
-  string output of lunar date}
+  string output of lunar date. Using Cantonese version of
+  Chinese Zodiac signs.}
 }
 \value{
-  A Traditional Chinese string representation of the lunar
+  Traditional Chinese string representation of the lunar
   date
 }
 \description{
-  This function converts lunar date to Chinese string.
+  convert lunar date to Traditional Chinese representation.
 }
 

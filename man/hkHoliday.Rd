@@ -1,0 +1,20 @@
+\name{hkHoliday}
+\alias{hkHoliday}
+\title{Calculate Hong Kong public holidays}
+\usage{
+  hkHoliday(yearInt, push = TRUE, withSunday = TRUE)
+}
+\arguments{
+  \item{yearInt}{The integer value of year}
+
+  \item{push}{Boolean, to push the public holidays in
+  Sunday to the nearest workday}
+
+  \item{withSunday}{Boolean, also included all Sundays as
+  public holidays}
+}
+\description{
+  This function is to calculate public holidays in Hong
+  Kong for a given year
+}
+

@@ -2,5 +2,5 @@
 #'
 #' @name hongkong
 #' @docType package
-#' @import lubridate stringr testthat
+#' @import lubridate stringr testthat memoise
 NULL

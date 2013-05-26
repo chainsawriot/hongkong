@@ -1,6 +1,17 @@
-hkHoliday <- function(yearInt, push=TRUE) {
+#' Calculate Hong Kong public holidays
+#'
+#' This function is to calculate public holidays in Hong Kong for a given year
+#' @param yearInt The integer value of year
+#' @param push Boolean, to push the public holidays in Sunday to the nearest workday
+#' @param withSunday Boolean, also included all Sundays as public holidays
+#' @export
+
+hkHoliday <- function(yearInt, push=TRUE, withSunday=TRUE) {
   # return all the holidays in a given year
   # According to the General Holidays Ordinance
+  if (yearInt < 1999) {
+    warning("hkHoliday may not be accurate for yearInt < 1999")
+  }
   composeHoliday <- function(day, mon, year, push=TRUE, lunar=FALSE, minus=FALSE) {
     if (lunar) {
       holidayDate <- lunarCal(c(Year=year, Month=mon, Day=day))
@@ -126,5 +137,39 @@ hkHoliday <- function(yearInt, push=TRUE) {
       }
     }
   }
-  return(holidays)
+  if (yearInt==1999) {
+    holidays['milleniumBug'] <- as.Date('1999-12-31')
+  }
+  if (withSunday) {
+    allDates <- seq(as.Date(paste0(yearInt, "-01-01")), as.Date(paste0(yearInt,"-12-31")), by="1 day")
+    allSundays <- allDates[wday(allDates) == 1]
+    for (i in 1:length(allSundays)) {
+      holidays[paste0("Sunday #", i)] <- allSundays[i]
+    }
+  }
+  return(sort(holidays))
+}
+#' Calculate Hong Kong public holidays
+#'
+#' This function is to determine the Date object in x are public holidays in Hong Kong
+#' @param x Vector of Date object
+#' @param push Boolean, to push the public holidays in Sunday to the nearest workday
+#' @param withSunday Boolean, also included all Sundays as public holidays
+#' @return logical vector
+#' @note very slow despite memoisation is used
+#' @examples
+#' data(hkweiboscope)
+#' hkweiboscope$hkHoliday <- is.hkHoliday(hkweiboscope$date)
+#' plot(x=hkweiboscope$date, y=hkweiboscope$count, col=ifelse(hkweiboscope$hkHoliday, 2, 1))
+#' @seealso \code{\link{hkHoliday}}
+#' @export
+
+is.hkHoliday <- function(x, push=TRUE, withSunday=TRUE) {
+  hkHolidayMemo <- memoise(hkHoliday)  ### despite memoisation, still very slow!
+  single.is.hkHoliday <- function(x, push, withSunday) {
+    y <- year(x)
+    allHolidays <- hkHolidayMemo(y, push=push, withSunday=withSunday)
+    return(x %in% allHolidays)
+  }
+  return(sapply(x, single.is.hkHoliday, push=push, withSunday=withSunday))
 }

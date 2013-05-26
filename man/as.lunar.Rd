@@ -11,6 +11,6 @@
   Lunar Date
 }
 \description{
-  A quick way to construct lunar date, akin the as.Date()
+  A handy way to construct lunar date, akin the as.Date().
 }
 

@@ -1,0 +1,34 @@
+\name{is.hkHoliday}
+\alias{is.hkHoliday}
+\title{Calculate Hong Kong public holidays}
+\usage{
+  is.hkHoliday(x, push = TRUE, withSunday = TRUE)
+}
+\arguments{
+  \item{x}{Vector of Date object}
+
+  \item{push}{Boolean, to push the public holidays in
+  Sunday to the nearest workday}
+
+  \item{withSunday}{Boolean, also included all Sundays as
+  public holidays}
+}
+\value{
+  logical vector
+}
+\description{
+  This function is to determine the Date object in x are
+  public holidays in Hong Kong
+}
+\note{
+  very slow despite memoisation is used
+}
+\examples{
+data(hkweiboscope)
+hkweiboscope$hkHoliday <- is.hkHoliday(hkweiboscope$date)
+plot(x=hkweiboscope$date, y=hkweiboscope$count, col=ifelse(hkweiboscope$hkHoliday, 2, 1))
+}
+\seealso{
+  \code{\link{hkHoliday}}
+}
+
