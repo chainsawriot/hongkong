@@ -1,10 +1,3 @@
-#' Calculate Hong Kong public holidays
-#'
-#' This function is to calculate public holidays in Hong Kong for a given year
-#' @param yearInt The integer value of year
-#' @param push Boolean, to push the public holidays in Sunday to the nearest workday
-#' @param withSunday Boolean, also included all Sundays as public holidays
-#' @export
 
 hkHoliday <- function(yearInt, push=TRUE, withSunday=TRUE) {
   # return all the holidays in a given year
@@ -149,20 +142,7 @@ hkHoliday <- function(yearInt, push=TRUE, withSunday=TRUE) {
   }
   return(sort(holidays))
 }
-#' Calculate Hong Kong public holidays
-#'
-#' This function is to determine the Date object in x are public holidays in Hong Kong
-#' @param x Vector of Date object
-#' @param push Boolean, to push the public holidays in Sunday to the nearest workday
-#' @param withSunday Boolean, also included all Sundays as public holidays
-#' @return logical vector
-#' @note very slow despite memoisation is used
-#' @examples
-#' data(hkweiboscope)
-#' hkweiboscope$hkHoliday <- is.hkHoliday(hkweiboscope$date)
-#' plot(x=hkweiboscope$date, y=hkweiboscope$count, col=ifelse(hkweiboscope$hkHoliday, 2, 1))
-#' @seealso \code{\link{hkHoliday}}
-#' @export
+
 
 is.hkHoliday <- function(x, push=TRUE, withSunday=TRUE) {
   hkHolidayMemo <- memoise(hkHoliday)  ### despite memoisation, still very slow!

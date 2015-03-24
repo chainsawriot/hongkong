@@ -1,16 +1,3 @@
-#' Convert Solar date to and from lunar date
-#'
-#' This function allows the conversion between solar date and lunar date.
-#'
-#' @param x date to convert, can be solar date or lunar date. Date object is converted to lunar date. Vector with
-#' the format of lunar date is converted to solar date.
-#' @param toString format the output lunar date to Chinese string (Traditional Chinese)
-#' @param withZodiac Append the Chinese Zodiac sign to the string output of
-#' lunar date
-#' @param ignoreLeap ignore leap month when the converted lunar date can have
-#' a leap month
-#' @return Date object (solar date) or lunar date, depends on the input x.
-#' @export
 
 lunarCal <- function(x, toString = FALSE, withZodiac = FALSE, ignoreLeap=TRUE) {
     params <- lookupData(lookup="params")
@@ -104,10 +91,6 @@ lunarCal <- function(x, toString = FALSE, withZodiac = FALSE, ignoreLeap=TRUE) {
   }
 }
 
-### A helper function to extract data from liblunar dataset and provide various magic numbers for lunarCal and is.lunar
-### lookup = "year" -> get the number of day of a given lunar year
-### lookup = "month" -> get the number of day of a given lunar month
-### lookup = "leap" -> get the leap month of a given lunar year, return 13 if there is no leap month
 lookupData <- function(lunarYearInt, lunarMonthInt, lookup) {
 	### magic numbers
     lunarMonthData <- c(
@@ -168,18 +151,9 @@ lookupData <- function(lunarYearInt, lunarMonthInt, lookup) {
         stop("Invalid lookup parameter")
     }
 }
-#' Format lunar date into Chinese string
-#'
-#' convert lunar date to Traditional Chinese representation.
-#'
-#' @param lunarDate date to convert
-#' @param withZodiac Append the Chinese Zodiac sign to the string output of
-#' lunar date. Using Cantonese version of Chinese Zodiac signs.
-#' @return Traditional Chinese string representation of the lunar date
-#' @export
 
 formatLunar <- function(lunarDate, withZodiac=FALSE) {
-  ## magic number
+  ## magic numbers
   stems <- c("甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸")
   branches <- c("子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥")
   zodiac <- c("鼠", "牛", "虎", "兔", "龍", "蛇", "馬", "羊", "猴", "鷄", "狗", "豬") ### Cantonese version, not Vietnamese, OK?
@@ -201,14 +175,6 @@ formatLunar <- function(lunarDate, withZodiac=FALSE) {
   zodiacStr <- ifelse(withZodiac, paste0("肖", zodiac[branchIndex]), "")
   return(paste0(stems[stemIndex], branches[branchIndex], "年", monthStr, "月", dayStr, "日", zodiacStr))
 }
-
-#' Check for the validity of lunar date
-#'
-#' Check the validty of lunar date
-#'
-#' @param lunarDate date to check
-#' @return Boolean
-#' @export
 
 is.lunar <- function(lunarDate) {
     params <- lookupData(lookup="params")
@@ -246,13 +212,6 @@ is.lunar <- function(lunarDate) {
       return(TRUE)
 }
 
-#' Lunar date conversion function from character
-#'
-#' A handy way to construct lunar date, akin the as.Date().
-#'
-#' @param x String
-#' @return Lunar Date
-#' @export
 
 as.lunar <- function(x, check=TRUE) {
   ### automatically formatting the string of x to a lunar date

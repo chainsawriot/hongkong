@@ -4,13 +4,6 @@ Version: 0.1
 Author: Chung-hong Chan <chainsawtiney@gmail.com>
 Maintainer: Chung-hong Chan <chainsawtiney@gmail.com>
 Description: Various functions useful for analysing Hong Kong data
-Depends:
-    R (>= 3.0.0)
-Depends:
-    lubridate,memoise,testthat,stringr
-License: GPL-2
-Suggests:
-Collate:
-    'hkHoliday.R'
-    'hongkong-package.r'
-    'lunarCal.R'
+Depends: R (>= 3.0.0)
+Imports: lubridate,memoise,testthat,stringr
+License: MIT
