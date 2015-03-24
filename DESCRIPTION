@@ -7,3 +7,4 @@ Description: Various functions useful for analysing Hong Kong data
 Depends: R (>= 3.0.0)
 Imports: lubridate,memoise,testthat,stringr
 License: MIT
+Suggests: testthat

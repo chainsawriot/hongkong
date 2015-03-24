@@ -21,7 +21,7 @@ test_that("correct conversion of Year with Leap Month", {
 }
 )
 test_that("correct conversion when ignore Leap is FALSE", {
-    expect_that(lunarCal(c(Year=1996, Month=8, Day=11), ignoreLeap=FALSE), equals(c(as.Date("1995-09-25")))
+    expect_that(lunarCal(c(Year=1996, Month=8, Day=11), ignoreLeap=FALSE), equals(c(as.Date("1995-09-25"))))
     expect_that(lunarCal(c(Year=2010, Month=12, Day=2, Leap=0)), equals(as.Date("2011-01-05")))
 }
 )
